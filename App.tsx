@@ -4,6 +4,7 @@ import React from "react";
 
 import Home from "./src/screens/Home/Home";
 import OneRm from "./src/screens/OneRm/OneRm";
+import Programs from "./src/screens/Programs/Programs";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="OneRm" component={OneRm} />
+        <Stack.Screen name="Programs" component={Programs} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Animated,
-  Dimensions,
   Keyboard,
   ScrollView,
   Text,
@@ -13,7 +12,7 @@ import {
 import { oneRmstyles as styles } from "./OneRm.styles";
 import { calcOneRm, maxReps } from "../../utils/calc1rm";
 
-const OneRm = () => {
+const OneRm: React.FC = () => {
   const [weight, setWeight] = useState<string>("");
   const [reps, setReps] = useState<string>("");
   const [oneRm, setOneRm] = useState<number>(0);
@@ -22,8 +21,6 @@ const OneRm = () => {
   const [mapAnimations, setMapAnimations] = useState(
     Object.keys(maxReps).map(() => new Animated.Value(0)),
   );
-
-  const { height } = Dimensions.get("window");
 
   const handleCalculate = () => {
     Keyboard.dismiss();

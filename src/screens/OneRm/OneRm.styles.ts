@@ -9,7 +9,6 @@ export const oneRmstyles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-
   input: {
     height: 40,
     width: 200,

@@ -20,6 +20,14 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>One Rep Max Calculator</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        key={"programButton"}
+        style={styles.button}
+        onPress={() => navigation.navigate("Programs")}
+      >
+        <Text style={styles.buttonText}>Programs</Text>
+      </TouchableOpacity>
     </View>
   );
 };
