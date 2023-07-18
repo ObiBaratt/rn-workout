@@ -96,7 +96,7 @@ export const NuckolsDeadlift = (
   return [day1(), day2(), day3()];
 };
 
-export const SquatOverload = (oneRm: number): [number, number | string][][] => {
+export const Overload = (oneRm: number): [number, number | string][][] => {
   const repHi = roundNearestFive(oneRm * 0.94);
   const repMid = roundNearestFive(oneRm * 0.78);
   const rep5 = roundNearestFive(oneRm * 0.89);

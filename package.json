@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "tsc": "tsc",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build android-dev": "eas build -p android --profile preview"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.7",

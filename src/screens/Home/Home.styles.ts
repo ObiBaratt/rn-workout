@@ -7,9 +7,9 @@ export const homeStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+    justifyContent: "center",
   },
   titleText: {
-    marginTop: height * 0.3,
     fontSize: 30,
     fontWeight: "bold",
   },
@@ -22,7 +22,6 @@ export const homeStyles = StyleSheet.create({
     padding: 10,
     width: "80%",
     alignItems: "center",
-    borderColor: "blue",
     borderWidth: 1,
     borderRadius: 8,
   },

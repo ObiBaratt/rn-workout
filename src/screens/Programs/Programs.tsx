@@ -14,7 +14,7 @@ import {
   NuckolsDeadlift,
   NuckolsPress,
   NuckolsSquat,
-  SquatOverload,
+  Overload,
 } from "../../utils/basicPrograms";
 
 const Programs = () => {
@@ -39,7 +39,7 @@ const Programs = () => {
   };
 
   const options = [
-    { name: "Squat Overload", fxn: SquatOverload },
+    { name: "Overload", fxn: Overload },
     { name: "Greg Nuckol's Press", fxn: NuckolsPress },
     { name: "Greg Nuckol's Deadlift", fxn: NuckolsDeadlift },
     { name: "Greg Nuckol's Squat", fxn: NuckolsSquat },
@@ -104,6 +104,7 @@ const Programs = () => {
           >
             {options.map((option) => (
               <TouchableOpacity
+                style={styles.optionButton}
                 key={option.name}
                 onPress={() => handleSelectOption(option)}
               >
@@ -114,7 +115,7 @@ const Programs = () => {
         </TouchableOpacity>
       )}
 
-      {!isInputFocused && max && program
+      {!isInputFocused && max && program && !isOpen
         ? program.map((data, i) => (
             <View key={i}>
               <Text style={styles.tableTitle}>Day {i + 1}</Text>

@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export const oneRmstyles = StyleSheet.create({
   container: {
@@ -10,23 +10,15 @@ export const oneRmstyles = StyleSheet.create({
     padding: 20,
   },
   input: {
-    height: 40,
-    width: 200,
+    height: height * 0.07,
     margin: 12,
     borderWidth: 0.5,
     borderRadius: 8,
     textAlign: "center",
+    width: width * 0.8,
   },
-  button: {
-    alignItems: "center",
-    padding: 10,
-    marginVertical: 10,
-    borderRadius: 8,
-    borderWidth: 0.5,
-    borderColor: "blue",
-  },
-  buttonText: {
-    color: "blue",
+  inputWarn: {
+    borderColor: "red",
   },
   title: {
     fontSize: 20,

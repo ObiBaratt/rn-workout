@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   Keyboard,
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -16,6 +15,8 @@ const OneRm: React.FC = () => {
   const [weight, setWeight] = useState<string>("");
   const [reps, setReps] = useState<string>("");
   const [oneRm, setOneRm] = useState<number>(0);
+  const [warnWeight, setWarnWeight] = useState<boolean>(false);
+  const [warnReps, setWarnReps] = useState<boolean>(false);
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
   const [calcAnimation] = useState(new Animated.Value(0));
   const [mapAnimations, setMapAnimations] = useState(
@@ -25,6 +26,8 @@ const OneRm: React.FC = () => {
   const handleCalculate = () => {
     Keyboard.dismiss();
     if (weight && reps) {
+      setWarnReps(false);
+      setWarnWeight(false);
       const oneRepMax = calcOneRm(parseInt(weight), parseInt(reps));
       setOneRm(oneRepMax);
       Animated.parallel([
@@ -46,6 +49,17 @@ const OneRm: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (weight && !reps) {
+      setWarnReps(true);
+    } else if (!weight && reps) {
+      setWarnWeight(true);
+    } else if (!weight && !reps) {
+      setWarnWeight(false);
+      setWarnWeight(false);
+    }
+  }, [weight, reps]);
+
   return (
     <ScrollView
       keyboardShouldPersistTaps={"handled"}
@@ -56,6 +70,7 @@ const OneRm: React.FC = () => {
           : { justifyContent: "center" },
       ]}
     >
+      <Text style={styles.title}>One Rep Max Calculator</Text>
       <Animated.View
         style={{
           transform: [
@@ -69,22 +84,27 @@ const OneRm: React.FC = () => {
         }}
       >
         <TextInput
-          style={styles.input}
+          style={
+            warnWeight ? { ...styles.input, ...styles.inputWarn } : styles.input
+          }
           onChangeText={setWeight}
           value={weight}
           keyboardType="numeric"
           placeholder="Enter Weight"
+          placeholderTextColor={warnWeight ? "red" : "black"}
+          onBlur={handleCalculate}
         />
         <TextInput
-          style={styles.input}
+          style={
+            warnReps ? { ...styles.input, ...styles.inputWarn } : styles.input
+          }
           onChangeText={setReps}
           value={reps}
           keyboardType="numeric"
           placeholder="Enter Reps"
+          placeholderTextColor={warnReps ? "red" : "black"}
+          onBlur={handleCalculate}
         />
-        <TouchableOpacity style={styles.button} onPress={handleCalculate}>
-          <Text style={styles.buttonText}>Calculate</Text>
-        </TouchableOpacity>
       </Animated.View>
 
       {oneRm > 0 ? (

@@ -6,6 +6,7 @@ export const programsStyles = StyleSheet.create({
   titleText: {
     fontSize: 30,
     fontWeight: "bold",
+    paddingTop: height * 0.05,
   },
   tableTitle: {
     fontSize: 16,
@@ -16,7 +17,6 @@ export const programsStyles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
   },
   modal: {
     width: width * 0.6,
@@ -55,8 +55,8 @@ export const programsStyles = StyleSheet.create({
     marginVertical: 5,
   },
   input: {
-    height: 40,
-    width: 200,
+    height: height * 0.07,
+    width: width * 0.8,
     margin: 12,
     borderWidth: 0.5,
     borderRadius: 8,
@@ -81,5 +81,9 @@ export const programsStyles = StyleSheet.create({
   },
   bold: {
     fontWeight: "bold",
+  },
+  optionButton: {
+    width: width * 0.8,
+    alignContent: "center",
   },
 });
