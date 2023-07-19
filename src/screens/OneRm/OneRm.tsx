@@ -5,13 +5,19 @@ import {
   ScrollView,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 
-import { oneRmstyles as styles } from "./OneRm.styles";
+import { OneRmNavigationProp } from "../../types/navigation";
 import { calcOneRm, maxReps } from "../../utils/calc1rm";
+import { oneRmstyles as styles } from "./OneRm.styles";
 
-const OneRm: React.FC = () => {
+type OneRmProps = {
+  navigation: OneRmNavigationProp;
+};
+
+const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
   const [weight, setWeight] = useState<string>("");
   const [reps, setReps] = useState<string>("");
   const [oneRm, setOneRm] = useState<number>(0);
@@ -22,6 +28,17 @@ const OneRm: React.FC = () => {
   const [mapAnimations, setMapAnimations] = useState(
     Object.keys(maxReps).map(() => new Animated.Value(0)),
   );
+
+  useEffect(() => {
+    if (weight && !reps) {
+      setWarnReps(true);
+    } else if (!weight && reps) {
+      setWarnWeight(true);
+    } else if (!weight && !reps) {
+      setWarnWeight(false);
+      setWarnWeight(false);
+    }
+  }, [weight, reps]);
 
   const handleCalculate = () => {
     Keyboard.dismiss();
@@ -49,16 +66,11 @@ const OneRm: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (weight && !reps) {
-      setWarnReps(true);
-    } else if (!weight && reps) {
-      setWarnWeight(true);
-    } else if (!weight && !reps) {
-      setWarnWeight(false);
-      setWarnWeight(false);
-    }
-  }, [weight, reps]);
+  const goToPrograms = () => {
+    navigation.navigate("Programs", {
+      calcMax: oneRm,
+    });
+  };
 
   return (
     <ScrollView
@@ -109,7 +121,15 @@ const OneRm: React.FC = () => {
 
       {oneRm > 0 ? (
         <View>
-          <Text style={styles.title}>One Rep Max: {oneRm}</Text>
+          <View>
+            <Text style={styles.title}>One Rep Max: {oneRm}</Text>
+            <TouchableOpacity
+              style={styles.verticalSpaced}
+              onPress={goToPrograms}
+            >
+              <Text style={styles.generateProgram}>Generate a Program</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.table}>
             <View style={styles.tableRow}>

@@ -17,6 +17,7 @@ export const programsStyles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingBottom: height * 0.05,
   },
   modal: {
     width: width * 0.6,
@@ -85,5 +86,11 @@ export const programsStyles = StyleSheet.create({
   optionButton: {
     width: width * 0.8,
     alignContent: "center",
+  },
+  dontKnow: {
+    marginTop: height * 0.05,
+  },
+  dontKnowText: {
+    color: "blue",
   },
 });

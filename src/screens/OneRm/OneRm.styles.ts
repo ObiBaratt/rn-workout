@@ -55,4 +55,10 @@ export const oneRmstyles = StyleSheet.create({
   warningText: {
     color: "red",
   },
+  generateProgram: {
+    color: "blue",
+  },
+  verticalSpaced: {
+    marginVertical: height * 0.01,
+  },
 });

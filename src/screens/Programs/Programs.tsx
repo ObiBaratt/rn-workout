@@ -9,15 +9,28 @@ import {
   View,
 } from "react-native";
 
-import { programsStyles as styles } from "./Programs.styles";
+import {
+  ProgramNavigationProp,
+  ProgramRouteProp,
+} from "../../types/navigation";
 import {
   NuckolsDeadlift,
   NuckolsPress,
   NuckolsSquat,
   Overload,
 } from "../../utils/basicPrograms";
+import { programsStyles as styles } from "./Programs.styles";
 
-const Programs = () => {
+type ProgramProps = {
+  navigation: ProgramNavigationProp;
+  route: ProgramRouteProp;
+};
+
+type RouteParams = {
+  calcMax?: number;
+};
+
+const Programs: React.FC<ProgramProps> = ({ navigation, route }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState<{
     name: string;
@@ -29,6 +42,13 @@ const Programs = () => {
   const [program, setProgram] = useState<[number, number | string][][] | null>(
     null,
   );
+  const { calcMax } = route.params as RouteParams;
+
+  useEffect(() => {
+    if (calcMax) {
+      setMax(calcMax);
+    }
+  }, [calcMax]);
 
   const animateTable = () => {
     Animated.timing(animation, {
@@ -53,10 +73,15 @@ const Programs = () => {
     setIsOpen(false);
   };
 
+  const goToOneRm = () => {
+    navigation.navigate("OneRm");
+  };
+
   useEffect(() => {
     if (!max || !selectedValue) {
     } else {
       setProgram(selectedValue.fxn(max));
+      animateTable();
     }
   }, [max, selectedValue]);
 
@@ -72,19 +97,26 @@ const Programs = () => {
       </TouchableOpacity>
 
       {selectedValue && (
-        <TextInput
-          style={styles.input}
-          onChangeText={(text: string) => setMax(parseInt(text))}
-          value={max > 0 ? max.toString() : ""}
-          keyboardType="numeric"
-          placeholder="Enter Your One Rep Max"
-          onBlur={() => {
-            Keyboard.dismiss();
-            animateTable();
-            setIsInputFocused(false);
-          }}
-          onFocus={() => setIsInputFocused(true)}
-        />
+        <>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text: string) => setMax(parseInt(text))}
+            value={max > 0 ? max.toString() : ""}
+            keyboardType="numeric"
+            placeholder="Enter Your One Rep Max"
+            onBlur={() => {
+              Keyboard.dismiss();
+              animateTable();
+              setIsInputFocused(false);
+            }}
+            onFocus={() => setIsInputFocused(true)}
+          />
+          <TouchableOpacity style={styles.dontKnow} onPress={goToOneRm}>
+            <Text style={styles.dontKnowText}>
+              Don't know your one rep max?
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
 
       {isOpen && (

@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "tsc": "tsc",
     "prepare": "husky install",
-    "build android-dev": "eas build -p android --profile preview"
+    "build:android-dev": "eas build -p android --profile preview"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.7",
