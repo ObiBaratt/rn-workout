@@ -42,7 +42,7 @@ const Programs: React.FC<ProgramProps> = ({ navigation, route }) => {
   const [program, setProgram] = useState<[number, number | string][][] | null>(
     null,
   );
-  const { calcMax } = route.params as RouteParams;
+  const calcMax = route.params?.calcMax;
 
   useEffect(() => {
     if (calcMax) {
