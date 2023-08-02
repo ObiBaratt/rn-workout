@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Animated,
-  Keyboard,
   ScrollView,
   Text,
   TextInput,
@@ -26,7 +25,7 @@ const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
   const [calcAnimation] = useState(new Animated.Value(0));
   const [mapAnimations, setMapAnimations] = useState(
-    Object.keys(maxReps).map(() => new Animated.Value(0)),
+    Object.keys(maxReps).map(() => new Animated.Value(0))
   );
 
   useEffect(() => {
@@ -41,7 +40,6 @@ const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
   }, [weight, reps]);
 
   const handleCalculate = () => {
-    Keyboard.dismiss();
     if (weight && reps) {
       setWarnReps(false);
       setWarnWeight(false);
@@ -59,7 +57,7 @@ const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
             duration: 1000,
             delay: index * 50,
             useNativeDriver: true,
-          }),
+          })
         ),
       ]).start();
       setIsCalculated(true);
