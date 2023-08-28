@@ -1,3 +1,4 @@
+import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   Animated,
@@ -9,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import { programsStyles as styles } from "./Programs.styles";
 import {
   ProgramNavigationProp,
   ProgramRouteProp,
@@ -19,18 +21,10 @@ import {
   NuckolsSquat,
   Overload,
 } from "../../utils/basicPrograms";
-import { programsStyles as styles } from "./Programs.styles";
 
-type ProgramProps = {
-  navigation: ProgramNavigationProp;
-  route: ProgramRouteProp;
-};
-
-type RouteParams = {
-  calcMax?: number;
-};
-
-const Programs: React.FC<ProgramProps> = ({ navigation, route }) => {
+const Programs: React.FC = () => {
+  const navigation = useNavigation<ProgramNavigationProp>();
+  const route = useRoute<ProgramRouteProp>();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState<{
     name: string;
@@ -83,7 +77,7 @@ const Programs: React.FC<ProgramProps> = ({ navigation, route }) => {
       setProgram(selectedValue.fxn(max));
       animateTable();
     }
-  }, [max, selectedValue]);
+  }, [max, selectedValue, animateTable]);
 
   return (
     <ScrollView

@@ -1,7 +1,7 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   Animated,
-  Keyboard,
   ScrollView,
   Text,
   TextInput,
@@ -9,15 +9,12 @@ import {
   View,
 } from "react-native";
 
+import { oneRmstyles as styles } from "./OneRm.styles";
 import { OneRmNavigationProp } from "../../types/navigation";
 import { calcOneRm, maxReps } from "../../utils/calc1rm";
-import { oneRmstyles as styles } from "./OneRm.styles";
 
-type OneRmProps = {
-  navigation: OneRmNavigationProp;
-};
-
-const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
+const OneRm: React.FC = () => {
+  const navigation = useNavigation<OneRmNavigationProp>();
   const [weight, setWeight] = useState<string>("");
   const [reps, setReps] = useState<string>("");
   const [oneRm, setOneRm] = useState<number>(0);
@@ -41,7 +38,6 @@ const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
   }, [weight, reps]);
 
   const handleCalculate = () => {
-    Keyboard.dismiss();
     if (weight && reps) {
       setWarnReps(false);
       setWarnWeight(false);
@@ -69,6 +65,13 @@ const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
   const goToPrograms = () => {
     navigation.navigate("Programs", {
       calcMax: oneRm,
+    });
+  };
+
+  const goToMaxes = () => {
+    navigation.navigate("Maxes", {
+      calcMax: oneRm,
+      adding: true,
     });
   };
 
@@ -123,12 +126,20 @@ const OneRm: React.FC<OneRmProps> = ({ navigation }) => {
         <View>
           <View>
             <Text style={styles.title}>One Rep Max: {oneRm}</Text>
-            <TouchableOpacity
-              style={styles.verticalSpaced}
-              onPress={goToPrograms}
-            >
-              <Text style={styles.generateProgram}>Generate a Program</Text>
-            </TouchableOpacity>
+            <View style={styles.linkContainer}>
+              <TouchableOpacity
+                style={styles.verticalSpaced}
+                onPress={goToPrograms}
+              >
+                <Text style={styles.generateProgram}>Generate a Program</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.verticalSpaced}
+                onPress={goToMaxes}
+              >
+                <Text style={styles.generateProgram}>Save your Max</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.table}>

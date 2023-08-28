@@ -5,11 +5,17 @@ type RootStackParamList = {
   Home: undefined;
   OneRm: undefined;
   Programs: { calcMax: number } | undefined;
+  Maxes: { calcMax: number; adding: boolean } | undefined;
 };
 
 export type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "Home"
+>;
+
+export type MaxesScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Maxes"
 >;
 
 export type ProgramNavigationProp = NativeStackNavigationProp<
@@ -22,4 +28,11 @@ export type OneRmNavigationProp = NativeStackNavigationProp<
   "OneRm"
 >;
 
+export type MaxesNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Maxes"
+>;
+
 export type ProgramRouteProp = RouteProp<RootStackParamList, "Programs">;
+
+export type MaxesRouteProp = RouteProp<RootStackParamList, "Maxes">;

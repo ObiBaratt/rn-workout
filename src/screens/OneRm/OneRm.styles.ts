@@ -24,6 +24,7 @@ export const oneRmstyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginVertical: 10,
+    textAlign: "center",
   },
   table: {
     flexDirection: "column",
@@ -60,5 +61,13 @@ export const oneRmstyles = StyleSheet.create({
   },
   verticalSpaced: {
     marginVertical: height * 0.01,
+    marginHorizontal: 20,
+  },
+  linkContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
   },
 });
