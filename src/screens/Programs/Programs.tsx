@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Animated,
   Keyboard,
@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 
-import { programsStyles as styles } from "./Programs.styles";
 import {
   ProgramNavigationProp,
   ProgramRouteProp,
@@ -21,6 +20,7 @@ import {
   NuckolsSquat,
   Overload,
 } from "../../utils/basicPrograms";
+import { programsStyles as styles } from "./Programs.styles";
 
 const Programs: React.FC = () => {
   const navigation = useNavigation<ProgramNavigationProp>();
@@ -44,13 +44,13 @@ const Programs: React.FC = () => {
     }
   }, [calcMax]);
 
-  const animateTable = () => {
+  const animateTable = useCallback(() => {
     Animated.timing(animation, {
       toValue: 1,
       duration: 1000,
       useNativeDriver: true,
     }).start();
-  };
+  }, [animation]);
 
   const options = [
     { name: "Overload", fxn: Overload },
@@ -72,8 +72,7 @@ const Programs: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!max || !selectedValue) {
-    } else {
+    if (max && selectedValue) {
       setProgram(selectedValue.fxn(max));
       animateTable();
     }
