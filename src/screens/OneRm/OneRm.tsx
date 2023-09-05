@@ -23,7 +23,7 @@ const OneRm: React.FC = () => {
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
   const [calcAnimation] = useState(new Animated.Value(0));
   const [mapAnimations, setMapAnimations] = useState(
-    Object.keys(maxReps).map(() => new Animated.Value(0)),
+    Object.keys(maxReps).map(() => new Animated.Value(0))
   );
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const OneRm: React.FC = () => {
             duration: 1000,
             delay: index * 50,
             useNativeDriver: true,
-          }),
+          })
         ),
       ]).start();
       setIsCalculated(true);
