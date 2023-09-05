@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 
-import { maxesStyles as styles } from "./Maxes.styles";
 import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
+import { maxesStyles as styles } from "./Maxes.styles";
 const Maxes: React.FC = () => {
   const navigation = useNavigation<MaxesNavigationProp>();
   const route = useRoute<MaxesRouteProp>();
@@ -43,14 +43,9 @@ const Maxes: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("ue ran");
-    getAllKeys();
-  }, [adding]);
-
-  const goToPrograms = () => {
+  const goToPrograms = (weight: number) => {
     navigation.navigate("Programs", {
-      calcMax: 0,
+      calcMax: weight,
     });
   };
 
