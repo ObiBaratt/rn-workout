@@ -45,4 +45,10 @@ export const maxesStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  maxList: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

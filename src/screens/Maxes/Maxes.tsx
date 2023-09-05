@@ -42,6 +42,9 @@ const Maxes: React.FC = () => {
       setFailedLoad(true);
     }
   };
+  useEffect(() => {
+    getAllKeys();
+  }, [adding]);
 
   const goToPrograms = (weight: number) => {
     navigation.navigate("Programs", {
@@ -53,7 +56,21 @@ const Maxes: React.FC = () => {
     if (lift && weight) {
       try {
         await AsyncStorage.setItem(lift, weight, () => {
-          console.log("success");
+          setLift("");
+          setWeight("");
+          setAdding(!adding);
+          return null;
+        });
+      } catch (e) {
+        // saving error should add retry option
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (lift) {
+      try {
+        await AsyncStorage.removeItem(lift, () => {
           setLift("");
           setWeight("");
           setAdding(!adding);
@@ -87,13 +104,14 @@ const Maxes: React.FC = () => {
           {keys.length > 0 && !adding ? (
             <View style={styles.container}>
               {keys.map((key) => (
-                <Text
-                  key={key[0]}
-                  style={styles.title}
-                  onPress={() => handleEdit(key[0], key[1])}
-                >
-                  {key[0]}: {key[1]}
-                </Text>
+                <View style={styles.maxList} key={`${key[0]} - ${key[1]}`}>
+                  <Text
+                    style={styles.title}
+                    onPress={() => handleEdit(key[0], key[1])}
+                  >
+                    {key[0]}: {key[1]}
+                  </Text>
+                </View>
               ))}
               <TouchableOpacity
                 style={styles.button}
@@ -122,6 +140,9 @@ const Maxes: React.FC = () => {
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={handleSave}>
                   <Text>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={handleDelete}>
+                  <Text>Delete</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.button}
