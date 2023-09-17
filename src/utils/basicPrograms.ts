@@ -5,6 +5,17 @@ const percent1rm = (oneRm: number, percent: number): number => oneRm * percent;
 const setCalc = (oneRm: number, percent: number): number =>
   roundNearestFive(percent1rm(oneRm, percent));
 
+/*
+
+Change data to  one day = Array<{weightPercent, reps}>. The array indexing + 1 would be the set count.
+
+Adding new workouts same UI as display workout table: No Set col, WeightPercentage, Reps are editable.
++ new row button to add an entry to the day array
+
++ new day / copy previous day button. Copy previous day duplicates the day array so it can be mutated independently.
+
+*/
+
 export const NuckolsPress = (oneRm: number): [number, number | string][][] => {
   const percent80 = setCalc(oneRm, 0.8);
   const percent85 = setCalc(oneRm, 0.85);
