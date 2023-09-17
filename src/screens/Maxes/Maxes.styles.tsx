@@ -41,14 +41,29 @@ export const maxesStyles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 10,
   },
+  addButton: {
+    marginTop: 20,
+    padding: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+    marginHorizontal: 10,
+  },
+  goButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginHorizontal: 10,
+    alignSelf: "center",
+  },
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
   },
   maxList: {
-    display: "flex",
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "space-between",
+    width: "90%",
   },
 });

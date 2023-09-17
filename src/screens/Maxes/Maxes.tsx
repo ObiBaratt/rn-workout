@@ -18,7 +18,7 @@ const Maxes: React.FC = () => {
   const [lift, setLift] = useState<string>("");
   const [weight, setWeight] = useState<string>("");
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
-  const [adding, setAdding] = useState<boolean>(false);
+  const [adding, setAdding] = useState<boolean>(true);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const Maxes: React.FC = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView keyboardShouldPersistTaps="handled">
       {failedLoad ? (
         <View style={styles.container}>
           <TouchableOpacity onPress={getAllKeys}>
@@ -111,13 +111,19 @@ const Maxes: React.FC = () => {
                   >
                     {key[0]}: {key[1]}
                   </Text>
+                  <TouchableOpacity
+                    style={styles.goButton}
+                    onPress={() => goToPrograms(Number(key[1]) || 0)}
+                  >
+                    <Text>Gen Program</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
               <TouchableOpacity
-                style={styles.button}
+                style={styles.addButton}
                 onPress={() => setAdding(!adding)}
               >
-                <Text>Add New Lift</Text>
+                <Text>Add New Max</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -148,7 +154,7 @@ const Maxes: React.FC = () => {
                   style={styles.button}
                   onPress={() => setAdding(!adding)}
                 >
-                  <Text>See Maxes</Text>
+                  <Text>Maxes</Text>
                 </TouchableOpacity>
               </View>
             </View>
