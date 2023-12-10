@@ -12,13 +12,14 @@ import {
 
 import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
 import { maxesStyles as styles } from "./Maxes.styles";
+
 const Maxes: React.FC = () => {
   const navigation = useNavigation<MaxesNavigationProp>();
   const route = useRoute<MaxesRouteProp>();
   const [lift, setLift] = useState<string>("");
   const [weight, setWeight] = useState<string>("");
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
-  const [adding, setAdding] = useState<boolean>(true);
+  const [adding, setAdding] = useState<boolean>(false);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
 
   useEffect(() => {
@@ -116,6 +117,7 @@ const Maxes: React.FC = () => {
                     onPress={() => goToPrograms(Number(key[1]) || 0)}
                   >
                     <Text>Gen Program</Text>
+                    {/* TODO: Add trash button here */}
                   </TouchableOpacity>
                 </View>
               ))}
