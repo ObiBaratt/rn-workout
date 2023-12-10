@@ -1,8 +1,10 @@
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  Animated,
   ScrollView,
   Text,
   TextInput,
@@ -20,7 +22,9 @@ const Maxes: React.FC = () => {
   const [weight, setWeight] = useState<string>("");
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
   const [adding, setAdding] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(true);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
+  const [deletingAnimation] = useState(new Animated.Value(0));
 
   useEffect(() => {
     const calcMax = route.params?.calcMax;
@@ -47,6 +51,14 @@ const Maxes: React.FC = () => {
     getAllKeys();
   }, [adding]);
 
+  const animationToDelete = useCallback(() => {
+    Animated.timing(deletingAnimation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [deletingAnimation]);
+
   const goToPrograms = (weight: number) => {
     navigation.navigate("Programs", {
       calcMax: weight,
@@ -69,17 +81,14 @@ const Maxes: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (lift) {
-      try {
-        await AsyncStorage.removeItem(lift, () => {
-          setLift("");
-          setWeight("");
-          setAdding(!adding);
-          return null;
-        });
-      } catch (e) {
-        // saving error should add retry option
-      }
+    try {
+      await AsyncStorage.removeItem(lift, () => {
+        setDeleting(true);
+        animationToDelete();
+        return null;
+      });
+    } catch (e) {
+      // saving error should add retry option
     }
   };
 
@@ -102,30 +111,48 @@ const Maxes: React.FC = () => {
           <View style={styles.container}>
             <Text style={styles.title}>Maxes</Text>
           </View>
-          {keys.length > 0 && !adding ? (
+          {!adding ? (
             <View style={styles.container}>
-              {keys.map((key) => (
-                <View style={styles.maxList} key={`${key[0]} - ${key[1]}`}>
-                  <Text
-                    style={styles.title}
-                    onPress={() => handleEdit(key[0], key[1])}
-                  >
-                    {key[0]}: {key[1]}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.goButton}
-                    onPress={() => goToPrograms(Number(key[1]) || 0)}
-                  >
-                    <Text>Gen Program</Text>
-                    {/* TODO: Add trash button here */}
-                  </TouchableOpacity>
-                </View>
-              ))}
+              {keys.length > 0 ? (
+                /* TODO: fix this logic, maybe? */
+                keys.map((key) => (
+                  <View style={styles.maxList} key={`${key[0]} - ${key[1]}`}>
+                    <Text
+                      style={styles.title}
+                      onPress={() => handleEdit(key[0], key[1])}
+                    >
+                      {key[0]}: {key[1]}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.goButton}
+                      onPress={() => goToPrograms(Number(key[1]) || 0)}
+                    >
+                      <Text style={styles.buttonText}>Generate Program</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={handleDelete}
+                    >
+                      <FontAwesome5 name="trash" size={15} />
+                    </TouchableOpacity>
+                  </View>
+                  {deleting && (
+                  <Animated.View style={{opacity: deletingAnimation}}>
+                    <Text style={styles.buttonText}>Are you sure you want to delete?</Text>
+                  </Animated.View> )
+                }
+
+
+                ))
+              ) : (
+                <Text>No Maxes Available</Text>
+              )}
+
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => setAdding(!adding)}
               >
-                <Text>Add New Max</Text>
+                <Text style={styles.buttonText}>Add New Max</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -148,9 +175,6 @@ const Maxes: React.FC = () => {
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={handleSave}>
                   <Text>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleDelete}>
-                  <Text>Delete</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.button}
