@@ -135,14 +135,15 @@ const Maxes: React.FC = () => {
                     >
                       <FontAwesome5 name="trash" size={15} />
                     </TouchableOpacity>
+
+                    {deleting && (
+                      <Animated.View style={{ opacity: deletingAnimation }}>
+                        <Text style={styles.buttonText}>
+                          Are you sure you want to delete?
+                        </Text>
+                      </Animated.View>
+                    )}
                   </View>
-                  {deleting && (
-                  <Animated.View style={{opacity: deletingAnimation}}>
-                    <Text style={styles.buttonText}>Are you sure you want to delete?</Text>
-                  </Animated.View> )
-                }
-
-
                 ))
               ) : (
                 <Text>No Maxes Available</Text>
