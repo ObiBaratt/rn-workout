@@ -22,9 +22,13 @@ const Maxes: React.FC = () => {
   const [weight, setWeight] = useState<string>("");
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
   const [adding, setAdding] = useState<boolean>(false);
-  const [deleting, setDeleting] = useState<boolean>(true);
+  const [deleting, setDeleting] = useState<boolean>(false);
+  const [deleteArr, setDeleteArr] = useState<readonly KeyValuePair[]>([]);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
   const [deletingAnimation] = useState(new Animated.Value(0));
+
+  const deletedLifts = keys.filter((key) => key[0] !== lift);
+  const foundLifts = deletedLifts.find((item: any) => item === lift);
 
   useEffect(() => {
     const calcMax = route.params?.calcMax;
@@ -80,11 +84,23 @@ const Maxes: React.FC = () => {
     }
   };
 
+  const handleDeleteTrigger = (lift: string) => {
+    const foundLift =
+      foundLifts && foundLifts[0] === lift ? foundLifts : undefined;
+    if (foundLift && foundLift[0] === lift) {
+      setDeleting(true);
+      setDeleteArr(foundLift);
+    }
+    animationToDelete();
+
+    console.log(`found lifts: ${foundLifts}`);
+    console.log(`deleted lifts: ${deletedLifts}`);
+  };
+
   const handleDelete = async () => {
     try {
       await AsyncStorage.removeItem(lift, () => {
         setDeleting(true);
-        animationToDelete();
         return null;
       });
     } catch (e) {
@@ -114,11 +130,11 @@ const Maxes: React.FC = () => {
           {!adding ? (
             <View style={styles.container}>
               {keys.length > 0 ? (
-                /* TODO: fix this logic, maybe? */
+                /* TODO: fix this logic, maybe? Need to be able to delete item to test */
                 keys.map((key) => (
                   <View style={styles.maxList} key={`${key[0]} - ${key[1]}`}>
                     <Text
-                      style={styles.title}
+                      style={styles.maxTitle}
                       onPress={() => handleEdit(key[0], key[1])}
                     >
                       {key[0]}: {key[1]}
@@ -131,15 +147,20 @@ const Maxes: React.FC = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.deleteButton}
-                      onPress={handleDelete}
+                      onPress={() => handleDeleteTrigger(key[0][0])}
                     >
                       <FontAwesome5 name="trash" size={15} />
                     </TouchableOpacity>
 
                     {deleting && (
-                      <Animated.View style={{ opacity: deletingAnimation }}>
-                        <Text style={styles.buttonText}>
-                          Are you sure you want to delete?
+                      <Animated.View
+                        style={[
+                          styles.deleteItem,
+                          { opacity: deletingAnimation },
+                        ]}
+                      >
+                        <Text style={styles.deleteItem}>
+                          Are you sure you want to delete {deleteArr}?
                         </Text>
                       </Animated.View>
                     )}
