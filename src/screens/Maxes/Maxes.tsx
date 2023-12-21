@@ -1,4 +1,3 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -105,12 +104,6 @@ const Maxes: React.FC = () => {
                       onPress={() => goToPrograms(Number(key[1]) || 0)}
                     >
                       <Text style={styles.buttonText}>Generate Program</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => handleDeleteTrigger(key[0][0])}
-                    >
-                      <FontAwesome5 name="trash" size={15} />
                     </TouchableOpacity>
                   </View>
                 ))

@@ -1,11 +1,13 @@
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import React, { useCallback, useState } from "react";
-import { Animated, Text } from "react-native";
+import { Animated, Text, TouchableOpacity } from "react-native";
 
 import { deleteButtonStyles as styles } from "./DeleteButton.styles";
 
 const DeleteButton: React.FC = () => {
+  //get keys from parent
   const deletedLifts = keys.filter((key) => key[0] !== lift);
   const foundLifts = deletedLifts.find((item: any) => item === lift);
 
@@ -46,11 +48,21 @@ const DeleteButton: React.FC = () => {
   };
 
   return (
-    <Animated.View style={[styles.deleteItem, { opacity: deletingAnimation }]}>
-      <Text style={styles.deleteItem}>
-        Are you sure you want to delete {deleteArr}?
-      </Text>
-    </Animated.View>
+    <>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDeleteTrigger(key[0][0])}
+      >
+        <FontAwesome5 name="trash" size={15} />
+      </TouchableOpacity>
+      <Animated.View
+        style={[styles.deleteItem, { opacity: deletingAnimation }]}
+      >
+        <Text style={styles.deleteItem}>
+          Are you sure you want to delete {deleteArr}?
+        </Text>
+      </Animated.View>
+    </>
   );
 };
 
