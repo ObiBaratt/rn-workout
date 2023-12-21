@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
-import React, { useState } from "react";
-import { Animated } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Animated, Text } from "react-native";
+
+import { deleteButtonStyles as styles } from "./DeleteButton.styles";
 
 const DeleteButton: React.FC = () => {
   const deletedLifts = keys.filter((key) => key[0] !== lift);
