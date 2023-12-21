@@ -2,9 +2,8 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Animated,
   ScrollView,
   Text,
   TextInput,
@@ -22,13 +21,7 @@ const Maxes: React.FC = () => {
   const [weight, setWeight] = useState<string>("");
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
   const [adding, setAdding] = useState<boolean>(false);
-  const [deleting, setDeleting] = useState<boolean>(false);
-  const [deleteArr, setDeleteArr] = useState<readonly KeyValuePair[]>([]);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
-  const [deletingAnimation] = useState(new Animated.Value(0));
-
-  const deletedLifts = keys.filter((key) => key[0] !== lift);
-  const foundLifts = deletedLifts.find((item: any) => item === lift);
 
   useEffect(() => {
     const calcMax = route.params?.calcMax;
@@ -55,14 +48,6 @@ const Maxes: React.FC = () => {
     getAllKeys();
   }, [adding]);
 
-  const animationToDelete = useCallback(() => {
-    Animated.timing(deletingAnimation, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [deletingAnimation]);
-
   const goToPrograms = (weight: number) => {
     navigation.navigate("Programs", {
       calcMax: weight,
@@ -81,30 +66,6 @@ const Maxes: React.FC = () => {
       } catch (e) {
         // saving error should add retry option
       }
-    }
-  };
-
-  const handleDeleteTrigger = (lift: string) => {
-    const foundLift =
-      foundLifts && foundLifts[0] === lift ? foundLifts : undefined;
-    if (foundLift && foundLift[0] === lift) {
-      setDeleting(true);
-      setDeleteArr(foundLift);
-    }
-    animationToDelete();
-
-    console.log(`found lifts: ${foundLifts}`);
-    console.log(`deleted lifts: ${deletedLifts}`);
-  };
-
-  const handleDelete = async () => {
-    try {
-      await AsyncStorage.removeItem(lift, () => {
-        setDeleting(true);
-        return null;
-      });
-    } catch (e) {
-      // saving error should add retry option
     }
   };
 
@@ -151,19 +112,6 @@ const Maxes: React.FC = () => {
                     >
                       <FontAwesome5 name="trash" size={15} />
                     </TouchableOpacity>
-
-                    {deleting && (
-                      <Animated.View
-                        style={[
-                          styles.deleteItem,
-                          { opacity: deletingAnimation },
-                        ]}
-                      >
-                        <Text style={styles.deleteItem}>
-                          Are you sure you want to delete {deleteArr}?
-                        </Text>
-                      </Animated.View>
-                    )}
                   </View>
                 ))
               ) : (
