@@ -1,3 +1,4 @@
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -10,8 +11,10 @@ import {
   View,
 } from "react-native";
 
-import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
+import DeleteConfirmation from "./DeleteConfirmation";
 import { maxesStyles as styles } from "./Maxes.styles";
+import useDeleteConfirmation from "./useDeleteConfirmation";
+import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
 
 const Maxes: React.FC = () => {
   const navigation = useNavigation<MaxesNavigationProp>();
@@ -21,6 +24,8 @@ const Maxes: React.FC = () => {
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
   const [adding, setAdding] = useState<boolean>(false);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
+
+  const { handleDeleteTrigger } = useDeleteConfirmation(lift);
 
   useEffect(() => {
     const calcMax = route.params?.calcMax;
@@ -105,6 +110,13 @@ const Maxes: React.FC = () => {
                     >
                       <Text style={styles.buttonText}>Generate Program</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => handleDeleteTrigger(key[0])}
+                    >
+                      <FontAwesome5 name="trash" size={15} />
+                    </TouchableOpacity>
+                    <DeleteConfirmation />
                   </View>
                 ))
               ) : (

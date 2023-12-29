@@ -87,4 +87,12 @@ export const maxesStyles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 15,
   },
+  deleteButton: {
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 10,
+    alignSelf: "center",
+    justifyContent: "flex-end",
+    backgroundColor: "#bfbfbf",
+  },
 });

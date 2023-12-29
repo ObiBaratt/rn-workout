@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import { programsStyles as styles } from "./Programs.styles";
 import {
   ProgramNavigationProp,
   ProgramRouteProp,
@@ -20,7 +21,6 @@ import {
   NuckolsSquat,
   Overload,
 } from "../../utils/basicPrograms";
-import { programsStyles as styles } from "./Programs.styles";
 
 const Programs: React.FC = () => {
   const navigation = useNavigation<ProgramNavigationProp>();
