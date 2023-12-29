@@ -1,6 +1,6 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
   Animated,
   GestureResponderEvent,
@@ -32,22 +32,22 @@ const Maxrow: React.FC<MaxrowLift> = ({
     console.log(itemId);
   };
 
-  const animationToDelete = useCallback(() => {
+  /*const animationToDelete = useCallback(() => {
     Animated.timing(deletingAnimation, {
       toValue: 1,
       duration: 1000,
       useNativeDriver: true,
     }).start();
-  }, [deletingAnimation]);
+  }, [deletingAnimation]);*/
 
   return (
     <View style={styles.maxRow} key={`${liftName[0]} - ${liftName[1]}`}>
-      <Text
-        style={styles.maxTitle}
-        onPress={handlerToEdit(liftName[0], liftName[1])}
-      >
-        {liftName[0]}: {liftName[1]}
-      </Text>
+      <TouchableOpacity onPress={() => handlerToEdit}>
+        <Text style={styles.maxTitle}>
+          {liftName[0]}: {liftName[1]}
+        </Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.goButton} onPress={handlerToGoToPrograms}>
         <Text style={styles.buttonText}>Generate Program</Text>
       </TouchableOpacity>
