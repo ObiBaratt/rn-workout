@@ -1,4 +1,3 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -11,10 +10,9 @@ import {
   View,
 } from "react-native";
 
-import DeleteConfirmation from "./DeleteConfirmation";
-import { maxesStyles as styles } from "./Maxes.styles";
-import useDeleteConfirmation from "./useDeleteConfirmation";
 import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
+import { maxesStyles as styles } from "./Maxes.styles";
+import Maxrow from "./Maxrow";
 
 const Maxes: React.FC = () => {
   const navigation = useNavigation<MaxesNavigationProp>();
@@ -24,8 +22,6 @@ const Maxes: React.FC = () => {
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
   const [adding, setAdding] = useState<boolean>(false);
   const [failedLoad, setFailedLoad] = useState<boolean>(false);
-
-  const { handleDeleteTrigger } = useDeleteConfirmation(lift);
 
   useEffect(() => {
     const calcMax = route.params?.calcMax;
@@ -79,6 +75,23 @@ const Maxes: React.FC = () => {
     setAdding(!adding);
   };
 
+  // grab handleDelete from main branch
+  const handleDelete = async () => {
+    if (lift) {
+      try {
+        await AsyncStorage.removeItem(lift, () => {
+          setLift("");
+          setWeight("");
+          setAdding(!adding);
+          return null;
+        });
+      } catch (e) {
+        // saving error should add retry option
+        console.error("Error deleting item: ", e);
+      }
+    }
+  };
+
   return (
     <ScrollView keyboardShouldPersistTaps="handled">
       {failedLoad ? (
@@ -97,27 +110,13 @@ const Maxes: React.FC = () => {
               {keys.length > 0 ? (
                 /* TODO: fix this logic, maybe? Need to be able to delete item to test */
                 keys.map((key) => (
-                  <View style={styles.maxList} key={`${key[0]} - ${key[1]}`}>
-                    <Text
-                      style={styles.maxTitle}
-                      onPress={() => handleEdit(key[0], key[1])}
-                    >
-                      {key[0]}: {key[1]}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.goButton}
-                      onPress={() => goToPrograms(Number(key[1]) || 0)}
-                    >
-                      <Text style={styles.buttonText}>Generate Program</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => handleDeleteTrigger(key[0])}
-                    >
-                      <FontAwesome5 name="trash" size={15} />
-                    </TouchableOpacity>
-                    <DeleteConfirmation />
-                  </View>
+                  <Maxrow
+                    liftName={key}
+                    handlerToEdit={() => handleEdit(key[0], key[1])}
+                    handlerToGoToPrograms={() =>
+                      goToPrograms(Number(key[1]) || 0)
+                    }
+                  />
                 ))
               ) : (
                 <Text>No Maxes Available</Text>

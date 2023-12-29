@@ -27,13 +27,6 @@ export const maxesStyles = StyleSheet.create({
     width: "40%",
     textAlign: "center",
   },
-  maxTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: 10,
-    width: "40%",
-    textAlign: "left",
-  },
   buttonContainer: {
     display: "flex",
     flexDirection: "row",
@@ -61,16 +54,6 @@ export const maxesStyles = StyleSheet.create({
     borderWidth: 3,
     fontSize: 25,
   },
-  goButton: {
-    padding: 10,
-    borderRadius: 8,
-    marginHorizontal: 10,
-    alignSelf: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#7ebff8",
-    borderColor: "#0067c1",
-    borderWidth: 2,
-  },
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
@@ -86,13 +69,5 @@ export const maxesStyles = StyleSheet.create({
     borderBottomWidth: 2,
     paddingTop: 5,
     paddingBottom: 15,
-  },
-  deleteButton: {
-    padding: 10,
-    borderRadius: 8,
-    marginHorizontal: 10,
-    alignSelf: "center",
-    justifyContent: "flex-end",
-    backgroundColor: "#bfbfbf",
   },
 });
