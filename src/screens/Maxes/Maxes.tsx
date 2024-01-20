@@ -1,27 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
+import { ScrollView, TextInput, View } from "react-native";
+import { MaxesViewReducerActions, maxesReducer } from "../../lib/reducers/maxes.reducer";
 import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
-import { maxesStyles as styles } from "./Maxes.styles";
 import Button from "../../ui/components/buttons/Button";
-import {
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import OneRepMaxCard from "../../ui/components/cards/LiftEntryCard";
-import { maxesReducer, MaxesReducerActions } from "../../lib/reducers/maxes-view.reducer";
+import RetryButton from "../../ui/components/buttons/RetryButton";
+import OneRepMaxCard from "../../ui/components/cards/OneRepMaxCard";
+import { maxesStyles as styles } from "./Maxes.styles";
 
 const {
   SET_LIFT, 
   SET_WEIGHT, 
-  SET_LOAD_STATE,
-  STORAGE_UPDATE_KEYS,
-  STORAGE_TOGGLE_ADDING_STATE,
-} = MaxesReducerActions;
+  SET_FAILED_LOAD,
+  SET_STORAGE,
+  SET_ADDING_STATE
+} = MaxesViewReducerActions;
 
 const Maxes: React.FC = () => {
   const { navigate } = useNavigation<MaxesNavigationProp>();
@@ -34,58 +29,63 @@ const Maxes: React.FC = () => {
   const [state, dispatch] = useReducer(maxesReducer, {
     lift: '',
     weight: '',
-    didFailLoad: false,
-    storageAddingState: true,
-    currentKeysInStorage: [] as KeyValuePair[],
-    error: '',
+    dataInStorage: [],
+    didLoadingFail: false,
+    isStorageAdding: true,
   });
 
-  const { lift, weight, didFailLoad, storageAddingState } = state;
+  const { 
+    lift, weight, dataInStorage,
+    didLoadingFail, isStorageAdding,  
+  } = state;
   
-  // Gets the route parameters when the view mounts.
+  // Get route params when component mounts.
   useEffect(() => {
     const calcMax = route.params?.calcMax;
     const adding = route.params?.adding;
 
-    if (adding) 
-      dispatch({ type: STORAGE_TOGGLE_ADDING_STATE, payload: true });
+    if (adding) {
+      // to sync with 'payload' names in the maxesReducer func.
+      const newAddingState = true; 
+      dispatch({ type: SET_ADDING_STATE, payload: newAddingState });
+    }
     
-    if (calcMax)
-      dispatch({ type: SET_WEIGHT, payload: calcMax.toString() });
+    if (calcMax) {
+      // to sync with 'payload' names in the maxesReducer func.
+      const newWeightAmount = calcMax.toString(); 
+      dispatch({ type: SET_WEIGHT, payload: newWeightAmount });
+    }
 
   }, [route.params]);
 
-  const getAllKeys = async () => {
+  const getCurrentStorageData = async () => {
+    let newFailState;
+
     try {
-      dispatch({ type: SET_LOAD_STATE, payload: false });
+      newFailState = false;
+      dispatch({ type: SET_FAILED_LOAD, payload: newFailState });
 
-      const allKeys = await AsyncStorage.getAllKeys();
-      const dataFromStorage = await AsyncStorage.multiGet(allKeys);
+      const keyPairs = await AsyncStorage.getAllKeys();
+      const newStorageData = await AsyncStorage.multiGet(keyPairs);
 
-      dispatch({ type: STORAGE_UPDATE_KEYS, payload: dataFromStorage });
+      dispatch({ type: SET_STORAGE, payload: newStorageData });
 
     } catch (error) {
       console.error('Failed Storage Fetch: %s', error);
-      console.log(
-        '> Unable to fetch dasta from AsyncStorage.' +
-        'Problem start on Maxes screen.'
-      );
-      dispatch({ type: SET_LOAD_STATE, payload: true });
+      newFailState = true;
+      dispatch({ type: SET_FAILED_LOAD, payload: newFailState });
     }
   };
 
   // Fetch from storage when the component mounts.
-  useEffect(() => { getAllKeys() }, [storageAddingState]);
+  useEffect(() => { getCurrentStorageData() }, [isStorageAdding]);
 
-  const goToPrograms = (weight: number) => {
+  const goToPrograms = (weight: number) => 
     navigate('Programs', { calcMax: weight });
-  };
 
   const toggleAddingState = () => {
-    dispatch({ 
-      type: STORAGE_TOGGLE_ADDING_STATE, 
-      payload: !storageAddingState 
-    });
+    const newAddingState = !isStorageAdding;
+    dispatch({ type: SET_ADDING_STATE, payload: newAddingState });
   }
   
   /*
@@ -112,123 +112,166 @@ const Maxes: React.FC = () => {
   /*
   * 'DELETES' an existing key:value pair from storage.
   *
-  * Fires off reducer dispatch actions to sequentially
-  * update the current `state` object tied to the component.
+  * Fires off `resetLiftAndWeightState` callback if DB operation
+  * succeeds.
   */
   const handleDelete = async () => {
-    await AsyncStorage.removeItem(lift, () => {
-      dispatch({ type: SET_LIFT, payload: '' });
-      dispatch({ type: SET_WEIGHT, payload: '' });
-      toggleAddingState();
-    })
-    .catch((error) => {
+    try {
+      await AsyncStorage.removeItem(lift, () => {
+          const newLiftName = '';
+          const newWeightAmount = '';
+          dispatch({ type: SET_LIFT, payload: newLiftName });
+          dispatch({ type: SET_WEIGHT, payload: newWeightAmount });
+          toggleAddingState();
+        }
+      );
+    }
+    catch(error) {
       console.error('Storage Removal Failure: ', error);
-      console.log(`> Failed to remove ${lift} from storage`);
-    })
-    .then(() => 
-      console.log(`> Successfully removed ${lift} from storage`)
-    );
+    }
   }
 
-  /*
-  * 'UPDATES' an existing key:value pair from storage.
+ /*
+  * 'Updates' an existing key:value pair from storage.
   *
-  * Fires off reducer dispatch actions to sequentially
-  * update the current `state` object tied to the component.
+  * Fires off `resetLiftAndWeightState` callback if DB operation
+  * succeeds.
   */
   const handleEdit = (lift: string, weight: string | null) => {
-    dispatch({ type: SET_LIFT, payload: lift });
-    dispatch({ type: SET_WEIGHT, payload: weight ?? ''});
+    // To sync with 'payload' names in maxesReducer;
+    const newLiftName = lift;
+    const newWeightAmount = weight ?? '';
+
+    dispatch({ type: SET_LIFT, payload: newLiftName });
+    dispatch({ type: SET_WEIGHT, payload: newWeightAmount ?? ''});
     toggleAddingState();
   };
 
-  // Only render maxes list when storage is not adding AND there are items.
-  const showMaxesList = keys.length > 0 && !storageAddingState;
+  // Only render maxes list when storage is not adding AND there
+  // items in storage.
+  const showMaxesList = keys.length > 0 && !isStorageAdding;
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled">
-      {didFailLoad ? 
-        (<RetryButton styles={styles} onPress={getAllKeys} />) : 
-        (
-          <>
-            {showMaxesList ? (
-              // Display controls to enter a new max weight.
-              <View style={styles.container}>  
-                <TextInput
-                  style={styles.input}
-                  placeholder="Lift"
-                  value={lift}
-                  placeholderTextColor={"black"}
-                  onChangeText={(text: string) => 
-                    dispatch({ type: SET_LIFT, payload: text})
-                  }
-                />
-                <TextInput
-                  style={styles.input}
-                  keyboardType="numeric"
-                  placeholder="Weight"
-                  value={weight}
-                  placeholderTextColor={"black"}
-                  onChangeText={(text: string) => 
-                    dispatch({ type: SET_WEIGHT, payload: text })
-                  }
-                />
-
-                <View style={styles.buttonContainer}>
-                  <Button 
-                    label='Save' styles={styles} 
-                    onPress={handleSave} 
-                  />
-                  <Button 
-                    label='Delete' styles={styles} 
-                    onPress={handleDelete} 
-                  />
-                  <Button 
-                    label='Maxes' styles={styles}
-                    onPress={() => toggleAddingState()} 
-                  />
-                </View>
-              </View>
-            ) : (
-              // List of saved maxes from storage.
-              <View style={styles.container}>
-                {keys.map((key) => 
-                  <OneRepMaxCard 
-                    key={`${key[0]} - ${key[1]}`}
-                    styles={styles}
-                    storageKey={key}
-                    edit={handleEdit}
-                    moveTo={goToPrograms}
-                  />
-                )}
-                <Button
-                  label='Add New Max' styles={styles}
-                  onPress={toggleAddingState} 
-                />
-              </View>
-            )}
-          </>
-        )
-      }
+      {didLoadingFail ? 
+        (<RetryButton styles={styles} onPress={getCurrentStorageData} />) : 
+        (<>
+          {showMaxesList ? (
+            <MaxesList
+              styles={styles}
+              dataToRender={dataInStorage}
+              editFn={handleEdit}
+              goToFn={goToPrograms}
+              toggleAddFn={toggleAddingState}
+            />
+          ) : (
+            <MaxesInputControls 
+              styles={styles}
+              lift={lift}
+              weight={weight}
+              dispatch={dispatch}
+              saveFn={handleSave}
+              deleteFn={handleDelete}
+              toggleAddFn={toggleAddingState}
+            />
+          )}
+        </>
+      )}
     </ScrollView>
   );
 };
 
 export default Maxes;
 
-interface RetryButtonProps { 
-  styles: any, 
-  onPress: () => void 
+
+
+// NOTE: Can be placed back into main component.
+// Separated to help understand what was going
+// on in the main view.
+interface MaxesListProps {
+  styles: any,
+  dataToRender: KeyValuePair[]
+  editFn: (lift: string, weight: string | null) => void
+  goToFn: (weight: number) => void
+  toggleAddFn: () => void
 }
 
-const RetryButton = ({ styles, onPress}: RetryButtonProps) => {
+const MaxesList = ({
+  styles,
+  dataToRender,
+  editFn,
+  goToFn,
+  toggleAddFn
+}: MaxesListProps) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={styles.title}>
-          Failed to load data. Retry?
-        </Text>
-      </TouchableOpacity>
+      {dataToRender?.map((key) => 
+        <OneRepMaxCard 
+          key={`${key[0]} - ${key[1]}`}
+          styles={styles}
+          storageKey={key}
+          edit={editFn}
+          moveTo={goToFn}
+        />
+      )}
+      <Button 
+        label='Add New Max' 
+        styles={styles} 
+        onPress={toggleAddFn} 
+      />
     </View>
+  );
+}
+
+
+// NOTE: Can be placed back into main component.
+// Separated to help understand what was going
+// on in the main view.
+interface MaxesInputControlsProps {
+  styles: any
+  lift: string
+  weight: string
+  dispatch: any
+  saveFn: () => void
+  deleteFn: () => void
+  toggleAddFn: () => void
+}
+
+const MaxesInputControls = ({
+  styles, lift, weight, dispatch,
+  saveFn, deleteFn, toggleAddFn,
+} : MaxesInputControlsProps) => {
+  return (
+    <View style={styles.container}>  
+      <TextInput
+        style={styles.input}
+        placeholder="Lift"
+        value={lift}
+        placeholderTextColor="black"
+        onChangeText={(text) => {
+          const newLiftName = text;
+          dispatch({ type: SET_LIFT, payload: newLiftName});
+        }}
+      />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        placeholder="Weight"
+        value={weight}
+        placeholderTextColor="black"
+        onChangeText={(text) => {
+          const newWeightAmount = text;
+          dispatch({ type: SET_WEIGHT, payload: newWeightAmount });
+        }}
+      />
+      <View style={styles.buttonContainer}>
+        <Button label='Save' styles={styles} onPress={saveFn} />
+        <Button label='Delete' styles={styles} onPress={deleteFn} />
+        <Button 
+          label='Maxes' styles={styles}
+          onPress={() => toggleAddFn()} 
+        />
+      </View>
+   </View>
   );
 }

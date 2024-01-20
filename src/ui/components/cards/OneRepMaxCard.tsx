@@ -1,6 +1,6 @@
 import { KeyValuePair } from '@react-native-async-storage/async-storage/lib/typescript/types';
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Button from '../buttons/Button';
 
 type OneRepMax = {
