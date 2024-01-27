@@ -1,7 +1,10 @@
+import { logger } from "../../utils/logger.util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
+import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
+import { maxesStyles as styles } from "./Maxes.styles";
 import {
   ScrollView,
   Text,
@@ -10,16 +13,16 @@ import {
   View,
 } from "react-native";
 
-import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
-import { maxesStyles as styles } from "./Maxes.styles";
+
 const Maxes: React.FC = () => {
-  const navigation = useNavigation<MaxesNavigationProp>();
+  const { navigate } = useNavigation<MaxesNavigationProp>();
   const route = useRoute<MaxesRouteProp>();
-  const [lift, setLift] = useState<string>("");
-  const [weight, setWeight] = useState<string>("");
+
+  const [lift, setLift] = useState("");
+  const [weight, setWeight] = useState("");
   const [keys, setKeys] = useState<readonly KeyValuePair[]>([]);
-  const [adding, setAdding] = useState<boolean>(true);
-  const [failedLoad, setFailedLoad] = useState<boolean>(false);
+  const [adding, setAdding] = useState(true);
+  const [failedLoad, setFailedLoad] = useState(false);
 
   useEffect(() => {
     const calcMax = route.params?.calcMax;
@@ -32,61 +35,134 @@ const Maxes: React.FC = () => {
     }
   }, [route.params]);
 
-  const getAllKeys = async () => {
-    try {
-      setFailedLoad(false);
-      const asyncKeys = await AsyncStorage.getAllKeys();
-      const res = await AsyncStorage.multiGet(asyncKeys);
-      setKeys(res);
-    } catch (e) {
-      setFailedLoad(true);
-    }
-  };
   useEffect(() => {
     getAllKeys();
   }, [adding]);
 
-  const goToPrograms = (weight: number) => {
-    navigation.navigate("Programs", {
-      calcMax: weight,
-    });
+  const getAllKeys = async () => {
+    try {
+      setFailedLoad(false);
+      const currentKeyEntries = await AsyncStorage.getAllKeys();
+      const dataInStorage = await AsyncStorage.multiGet(currentKeyEntries);
+      setKeys(dataInStorage);
+
+    } catch (e) {
+      setFailedLoad(true);
+    }
   };
 
-  const handleSave = async () => {
+  const goToPrograms = (weight: number) => 
+    navigate("Programs", { calcMax: weight });
+
+  const resetComponentState = () => {
+    setLift("");
+    setWeight("");
+    setAdding(!adding);
+    return null;
+  }
+
+  const addLift = async () => {
+    
     if (lift && weight) {
       try {
-        await AsyncStorage.setItem(lift, weight, () => {
-          setLift("");
-          setWeight("");
-          setAdding(!adding);
-          return null;
-        });
+        const passedState = { lift, weight };
+        const storageKeys = await AsyncStorage.getAllKeys();
+        
+        if (storageKeys.includes(passedState.lift)) {
+          logger.info(
+            'Lift already exists in storage. ' + 
+            `Refusing to add new lift: ${passedState.lift}`
+          );
+        }
+
+        else if (!storageKeys.includes(passedState.lift)) {
+          logger.info(`Adding new lift to storage: ${passedState.lift}`);
+          await AsyncStorage.setItem(lift, weight, resetComponentState);
+        }
+        else 
+          logger.info('Something went wrong when trying to add a new lift.');
+
       } catch (e) {
-        // saving error should add retry option
+         // Else display UI that says the lift cannot be found & return.
+        // Optionally, we can throw some custom error & handle it in the catch.
+        // 'CannotFindLiftError'.
       }
     }
   };
 
-  const handleDelete = async () => {
+  const editLift = async () => {
+    if (lift && weight) {
+      try {
+        const passedState = { lift, weight };
+        const storageKeys = await AsyncStorage.getAllKeys();
+        
+        const isMatchingLift = 
+          (lift.trim().toLowerCase() === passedState.lift.trim().toLowerCase());
+       
+        const shouldEdit = isMatchingLift && storageKeys.includes(lift);
+
+        if (shouldEdit) {
+          logger.info(`Current keys: ${keys}`);
+          logger.info(`Editing values for storage entry - ${lift}`);
+          await AsyncStorage.setItem(passedState.lift, weight, resetComponentState);
+        
+        } else {
+         
+          logger.info(
+            `Failed edit. ` + 
+            `Cannot find existing key with name - ${passedState.lift}.`
+          ); // Throw an FailedEditOperationError here?
+          // In the catch, we'd render UI to retry??
+        }
+
+      } catch(e) {
+        // TODO: handle the case when bad entry
+      }
+    }
+  }
+
+  const removeLift = async () => {
+
     if (lift) {
       try {
-        await AsyncStorage.removeItem(lift, () => {
-          setLift("");
-          setWeight("");
-          setAdding(!adding);
-          return null;
-        });
+        const passedState = { lift };
+        const storageKeys = await AsyncStorage.getAllKeys();
+
+        if (storageKeys.includes(passedState.lift)) {
+          logger.info(`Lift found [${lift}]. Deleting lift from storage.`);
+          await AsyncStorage.removeItem(passedState.lift, resetComponentState);
+        }
+        
+        else {
+          // Else display UI that says the lift cannot be found & return.
+          // Optionally, we can throw some custom error & handle it in the catch.
+          // 'CannotFindLiftError'.
+          logger.info(
+            `Could not a key in current storage with name: ${passedState.lift}`
+          );
+          logger.info('No delete operation taken.');
+        }
+        
       } catch (e) {
         // saving error should add retry option
+        
+        /*
+          if (error instanceof CannotFindLiftError) {
+            // render UI to state the lift cannot be found
+            // and to try again.
+          }
+        */
       }
     }
   };
 
-  const handleEdit = (lift: string, weight: string | null) => {
+  const goToEditScreen = (lift: string, weight: string | null) => {
     setLift(lift);
     setWeight(weight || "");
     setAdding(!adding);
   };
+  
+  const shouldShowMaxesList = keys.length > 0 && !adding;
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled">
@@ -101,32 +177,7 @@ const Maxes: React.FC = () => {
           <View style={styles.container}>
             <Text style={styles.title}>Maxes</Text>
           </View>
-          {keys.length > 0 && !adding ? (
-            <View style={styles.container}>
-              {keys.map((key) => (
-                <View style={styles.maxList} key={`${key[0]} - ${key[1]}`}>
-                  <Text
-                    style={styles.title}
-                    onPress={() => handleEdit(key[0], key[1])}
-                  >
-                    {key[0]}: {key[1]}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.goButton}
-                    onPress={() => goToPrograms(Number(key[1]) || 0)}
-                  >
-                    <Text>Gen Program</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => setAdding(!adding)}
-              >
-                <Text>Add New Max</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
+          { shouldShowMaxesList ? (
             <View style={styles.container}>
               <TextInput
                 onChangeText={setLift}
@@ -144,21 +195,59 @@ const Maxes: React.FC = () => {
                 value={weight}
               />
               <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={handleSave}>
-                  <Text>Save</Text>
+                <TouchableOpacity style={styles.button} onPress={editLift}>
+                  <Text>Edit Lift</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleDelete}>
-                  <Text>Delete</Text>
+                <TouchableOpacity style={styles.button} onPress={addLift}>
+                  <Text>Add Lift</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={removeLift}>
+                  <Text>Delete Lift</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.button}
+                  style={styles.goBackToMaxesButton}
                   onPress={() => setAdding(!adding)}
                 >
-                  <Text>Maxes</Text>
+                  <Text>Back To Maxes</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          )}
+          ): (
+            <View style={styles.container}>
+              {keys.map((key) => {
+
+                const liftName = key[0];
+                const weightInLbs = key[1];
+
+                return (
+                  <View 
+                    key={`${liftName} - ${weightInLbs}`}
+                    style={styles.maxList} 
+                  >
+                  <Text
+                    style={styles.title}
+                    onPress={() => goToEditScreen(liftName, weightInLbs)}
+                  >
+                    {liftName}: {weightInLbs}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.goButton}
+                    onPress={() => goToPrograms(Number(weightInLbs) || 0)}
+                  >
+                    <Text>Gen Program</Text>
+                  </TouchableOpacity>
+                </View>
+                )
+              })}
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => setAdding(!adding)}
+              >
+                <Text>Add New Max</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        }
         </>
       )}
     </ScrollView>

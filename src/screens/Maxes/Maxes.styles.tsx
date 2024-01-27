@@ -7,15 +7,15 @@ export const maxesStyles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 16
   },
   input: {
     height: height * 0.07,
-    margin: 12,
-    borderWidth: 0.5,
-    borderRadius: 8,
+    marginVertical: 12,
+    borderWidth: 1.5,
+    borderRadius: 2,
     textAlign: "center",
-    width: width * 0.8,
+    width: '100%',
   },
   inputWarn: {
     borderColor: "red",
@@ -27,19 +27,15 @@ export const maxesStyles = StyleSheet.create({
   },
   buttonContainer: {
     display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "column",
     width: "100%",
   },
   button: {
-    marginTop: 20,
-    padding: 10,
-    width: "25%",
+    marginTop: 24,
+    paddingVertical: 12,
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 8,
-    marginHorizontal: 10,
   },
   addButton: {
     marginTop: 20,
@@ -59,6 +55,12 @@ export const maxesStyles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  goBackToMaxesButton: {
+    marginTop: 64,
+    alignItems: "center",
+    borderWidth: 0,
+    fontWeight: '900'
   },
   maxList: {
     flexDirection: "row",
