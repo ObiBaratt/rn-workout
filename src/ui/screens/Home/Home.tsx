@@ -1,8 +1,8 @@
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { HomeScreenNavigationProp } from "../../types/navigation";
+import { HomeScreenNavigationProp } from "../../../lib/types/navigation";
 import { homeStyles as styles } from "./Home.styles";
 
 const Home: React.FC = () => {
