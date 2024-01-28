@@ -1,5 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useCallback, useEffect, useState } from "react";
+import { programsStyles as styles } from "./Programs.styles";
 import {
   Animated,
   Keyboard,
@@ -13,14 +14,15 @@ import {
 import {
   ProgramNavigationProp,
   ProgramRouteProp,
-} from "../../types/navigation";
+} from "../../../lib/types/navigation";
+
 import {
   NuckolsDeadlift,
   NuckolsPress,
   NuckolsSquat,
   Overload,
-} from "../../utils/basicPrograms";
-import { programsStyles as styles } from "./Programs.styles";
+} from "../../../lib/utils/basicPrograms";
+
 
 const Programs: React.FC = () => {
   const navigation = useNavigation<ProgramNavigationProp>();

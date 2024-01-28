@@ -10,8 +10,8 @@ import {
 } from "react-native";
 
 import { oneRmstyles as styles } from "./OneRm.styles";
-import { OneRmNavigationProp } from "../../types/navigation";
-import { calcOneRm, maxReps } from "../../utils/calc1rm";
+import { OneRmNavigationProp } from "../../../lib/types/navigation";
+import { calcOneRm, maxReps } from "../../../lib/utils/calc1rm";
 
 const OneRm: React.FC = () => {
   const navigation = useNavigation<OneRmNavigationProp>();

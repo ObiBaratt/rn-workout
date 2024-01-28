@@ -1,10 +1,11 @@
-import { logger } from "../../utils/logger.util";
+import { logger } from "../../../lib/utils/logger.util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { MaxesNavigationProp, MaxesRouteProp } from "../../types/navigation";
+import { MaxesNavigationProp, MaxesRouteProp } from "../../../lib/types/navigation";
 import { maxesStyles as styles } from "./Maxes.styles";
+import Button from "../../components/buttons/Button";
 import {
   ScrollView,
   Text,
@@ -177,7 +178,7 @@ const Maxes: React.FC = () => {
           <View style={styles.container}>
             <Text style={styles.title}>Maxes</Text>
           </View>
-          { shouldShowMaxesList ? (
+          {shouldShowMaxesList ? (
             <View style={styles.container}>
               <TextInput
                 onChangeText={setLift}
@@ -195,21 +196,26 @@ const Maxes: React.FC = () => {
                 value={weight}
               />
               <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={editLift}>
-                  <Text>Edit Lift</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={addLift}>
-                  <Text>Add Lift</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={removeLift}>
-                  <Text>Delete Lift</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.goBackToMaxesButton}
+                <Button 
+                  label="Edit Lift"
+                  styles={styles} 
+                  onPress={editLift}
+                />
+                <Button
+                  label="Add Lift"
+                  styles={styles} 
+                  onPress={addLift} 
+                />
+                <Button
+                  label="Delete Lift"
+                  styles={styles} 
+                  onPress={removeLift}
+                />
+                <Button
+                  label="Back To Maxes"
+                  styles={styles}
                   onPress={() => setAdding(!adding)}
-                >
-                  <Text>Back To Maxes</Text>
-                </TouchableOpacity>
+                />
               </View>
             </View>
           ): (
@@ -224,27 +230,26 @@ const Maxes: React.FC = () => {
                     key={`${liftName} - ${weightInLbs}`}
                     style={styles.maxList} 
                   >
-                  <Text
-                    style={styles.title}
-                    onPress={() => goToEditScreen(liftName, weightInLbs)}
-                  >
-                    {liftName}: {weightInLbs}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.goButton}
-                    onPress={() => goToPrograms(Number(weightInLbs) || 0)}
-                  >
-                    <Text>Gen Program</Text>
-                  </TouchableOpacity>
+                    <Text
+                      style={styles.title}
+                      onPress={() => goToEditScreen(liftName, weightInLbs)}
+                    >
+                      {liftName}: {weightInLbs}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.goButton}
+                      onPress={() => goToPrograms(Number(weightInLbs) || 0)}
+                    >
+                      <Text>Gen Program</Text>
+                    </TouchableOpacity>
                 </View>
                 )
               })}
-              <TouchableOpacity
-                style={styles.addButton}
+              <Button
+                label="Add New Max"
+                styles={styles}
                 onPress={() => setAdding(!adding)}
-              >
-                <Text>Add New Max</Text>
-              </TouchableOpacity>
+              />
             </View>
           )
         }
