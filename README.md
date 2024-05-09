@@ -1,7 +1,14 @@
-# rn-workout
+## Intro
 React-Native Mobile app for generating specific powerlifting workouts. A remake and mobile optimization of one of my first apps [Workout Web](https://github.com/ObiBaratt/Workout-Web). 
 This version is much smoother, focuses on local storage as the data store instead of a centralized server that really served no purpose beyond learning. This local first development makes the   
 app fast and smooth, no waiting for API calls or internet connectivity when all you really want to do is start your workout!
+
+## Running the app
+- Clone the repo
+- ```npm install```
+- Install Expo Go from the App / Play Store on a phone.
+- ```npm start```
+- Scan the QR code with the Expo Go app
 
 ## What I'm proud of
 - The app works exactly how I want it to, its super fast, and gets me what I need when I need it.
