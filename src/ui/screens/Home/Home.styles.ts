@@ -1,6 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
-
-const { height } = Dimensions.get("window");
+// const { height } = Dimensions.get("window");
 
 export const homeStyles = StyleSheet.create({
   container: {
