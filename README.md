@@ -1,3 +1,6 @@
+# Depreciated
+I was using this to teach a few people mobile development, however that is no longer the case and this is now depreciated.
+
 ## Intro
 React-Native Mobile app for generating specific powerlifting workouts. A remake and mobile optimization of one of my first apps [Workout Web](https://github.com/ObiBaratt/Workout-Web). 
 This version is much smoother, focuses on local storage as the data store instead of a centralized server that really served no purpose beyond learning. This local first development makes the   
