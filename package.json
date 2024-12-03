@@ -23,7 +23,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "expo": "^50.0.2",
     "expo-status-bar": "~1.11.1",
-    "firebase": "^10.0.0",
+    "firebase": "^10.9.0",
     "prettier": "^3.0.0",
     "react": "18.2.0",
     "react-native": "0.73.2",
